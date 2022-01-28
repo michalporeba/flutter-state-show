@@ -21,7 +21,7 @@ class Home extends StatelessWidget {
           primarySwatch: Colors.grey
         ),
         home:  Scaffold(
-          appBar: AppBar(title: const Text('state management example')),
+          appBar: AppBar(title: const Text('state management demo')),
           body: SafeArea(
             child: Center(
               child: Column(
