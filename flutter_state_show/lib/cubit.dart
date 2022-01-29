@@ -30,38 +30,19 @@ class TheState {
       : height;
 }
 
-abstract class DemoEvent {
-  const DemoEvent();
-  TheState modify(TheState state);
+class StateCubit extends Cubit<TheState> {
+  StateCubit(): super(const TheState(width: 0.5, height: 0.5, color: Colors.grey));
+
+  void setSide(String attribute, double size)
+    => emit(
+        (attribute == 'width')
+            ? state.copyWith(width: size)
+            : state.copyWith(height: size)
+    );
+
+  void setColor(Color color) => emit(state.copyWith(color: color));
 }
 
-class SetSide extends DemoEvent {
-  final String attribute;
-  final double size;
-  const SetSide(this.attribute, this.size);
-
-  @override
-  TheState modify(TheState state) {
-    return attribute == 'width'
-      ? state.copyWith(width: size)
-        : state.copyWith(height: size);
-  }
-}
-
-class SetColor extends DemoEvent {
-  final Color color;
-  const SetColor(this.color);
-
-  @override modify(TheState state) {
-    return state.copyWith(color: color);
-  }
-}
-
-class StateBloc extends Bloc<DemoEvent, TheState> {
-  StateBloc(): super(const TheState(width: 0.5, height: 0.5, color: Colors.grey)) {
-    on<DemoEvent>((event, emit) => emit(event.modify(state)));
-  }
-}
 
 class SampleStateApp extends StatelessWidget {
   final Widget home;
@@ -70,7 +51,7 @@ class SampleStateApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => StateBloc(),
+      create: (_) => StateCubit(),
       child: home
     );
   }
@@ -89,10 +70,10 @@ class ColorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<StateBloc, TheState>(
+    return BlocBuilder<StateCubit, TheState>(
       builder: (context, model) {
         return OutlinedButton(
-            onPressed: () => context.read<StateBloc>().add(SetColor(color)),
+            onPressed: () => context.read<StateCubit>().setColor(color),
             child: Text(label, style: buttonStyle(color))
         );
       }
@@ -110,11 +91,11 @@ class MySlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<StateBloc, TheState>(
+    return BlocBuilder<StateCubit, TheState>(
       builder: (context, state) {
         return Slider(
             value: state.getSide(attribute),
-            onChanged: (value) { context.read<StateBloc>().add(SetSide(attribute, value));}
+            onChanged: (value) { context.read<StateCubit>().setSide(attribute, value);}
         );
       }
     );
@@ -127,7 +108,7 @@ class TheSquare extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<StateBloc, TheState>(
+    return BlocBuilder<StateCubit, TheState>(
         builder: (context, model) {
           return SizedBox(
               width: 50 + model.width * 200,
