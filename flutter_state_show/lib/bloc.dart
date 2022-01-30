@@ -1,34 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'defaults.dart';
-
-
-class TheState {
-  final double width;
-  final double height;
-  final Color color;
-
-  const TheState({
-    required this.width,
-    required this.height,
-    required this.color
-  });
-
-  TheState copyWith({
-    double? width,
-    double? height,
-    Color? color,
-  }) => TheState(
-      width: width ?? this.width,
-      height: height ?? this.height,
-      color: color ?? this.color
-  );
-
-  double getSide(String attribute)
-  => (attribute == 'width')
-      ? width
-      : height;
-}
+import 'immutable_state.dart';
 
 abstract class DemoEvent {
   const DemoEvent();
@@ -58,7 +31,7 @@ class SetColor extends DemoEvent {
 }
 
 class StateBloc extends Bloc<DemoEvent, TheState> {
-  StateBloc(): super(const TheState(width: 0.5, height: 0.5, color: Colors.grey)) {
+  StateBloc(): super(const TheState.initial()) {
     on<DemoEvent>((event, emit) => emit(event.modify(state)));
   }
 }
