@@ -652,9 +652,7 @@ class TheState extends Model {
 }
 ```
 
-### Redux
-### BLoC
-### Real BLoC
+### Redux, BLoC and Real BLoC
 
 ```dart
 class TheState {
@@ -693,7 +691,7 @@ class TheState {
 ## The State Management Comparison
 
 ### Scoped State
-
+*Move on, there is nothing to see here*
 
 ### Redux
 ```dart
@@ -799,7 +797,7 @@ void main() {
 ```dart
 ScopedModel<TheState>(
     model: TheState(),
-    child: home
+    child: Home()
 );
 ```
 
@@ -807,7 +805,7 @@ ScopedModel<TheState>(
 ```dart
 StoreProvider<TheState>(
     store: store,
-    child: home
+    child: Home()
 );
 ```
 
@@ -815,12 +813,10 @@ StoreProvider<TheState>(
 ### Real BLoC
 
 ```dart
-Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (_) => StateCubit(),
-        child: home
-    );
-}
+BlocProvider(
+    create: (_) => StateCubit(),
+    child: Home()
+);
 ```
 
 
