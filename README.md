@@ -810,8 +810,14 @@ StoreProvider<TheState>(
 ```
 
 ### BLoC
-### Real BLoC
+```dart
+return BlocProvider(
+    create: (_) => StateBloc(),
+    child: home
+);
+```
 
+### Real BLoC
 ```dart
 BlocProvider(
     create: (_) => StateCubit(),
