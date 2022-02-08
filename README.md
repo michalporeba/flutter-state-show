@@ -811,7 +811,7 @@ StoreProvider<TheState>(
 
 ### BLoC
 ```dart
-return BlocProvider(
+BlocProvider(
     create: (_) => StateBloc(),
     child: home
 );
