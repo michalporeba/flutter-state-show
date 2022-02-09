@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'starting_point.dart';
-// import 'statefull_direct.dart';
+// import 'stateful_direct.dart';
 // import 'scoped_poco.dart';
 // import 'scoped_state.dart';
 // import 'redux.dart';
