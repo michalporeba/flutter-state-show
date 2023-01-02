@@ -26,36 +26,58 @@ class ColorButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-        onPressed: null, //() => print('changing colour to ' + label),
+        onPressed: () => _squareState.setColor(color),
         child: Text(label, style: buttonStyle(color))
     );
   }
 }
 
 
-class MySlider extends StatelessWidget {
+class MySlider extends StatefulWidget {
   final String attribute;
-  final double value = 0.5;
+
   const MySlider({
     required this.attribute,
     Key? key
   }) : super(key: key);
 
   @override
+  State<MySlider> createState() => _MySliderState();
+}
+
+class _MySliderState extends State<MySlider> {
+  double value = 0.5;
+
+  @override
   Widget build(BuildContext context) {
     return Slider(
         value: value,
-        onChanged: null //(value) { print('changing $attribute to $value');}
+        onChanged: (value) {
+          print('changing ${widget.attribute} to $value');
+          setState(() {
+            this.value = value;
+            _squareState.setSize(widget.attribute, value);
+          });
+        }
     );
   }
 }
 
 
-class TheSquare extends StatelessWidget {
-  final double width = 150;
-  final double height = 150;
-  final Color color = Colors.grey;
+_TheSquareState _squareState = _TheSquareState();
+
+class TheSquare extends StatefulWidget {
+
   const TheSquare({Key? key}) : super(key: key);
+
+  @override
+  State<TheSquare> createState() => _squareState;
+}
+
+class _TheSquareState extends State<TheSquare> {
+  double width = 150;
+  double height = 150;
+  Color color = Colors.grey;
 
   @override
   Widget build(BuildContext context) {
@@ -64,5 +86,21 @@ class TheSquare extends StatelessWidget {
         height: height,
         child: DecoratedBox(decoration: BoxDecoration(color: color))
     );
+  }
+
+  void setColor(Color color) {
+    setState(() {
+      this.color = color;
+    });
+  }
+
+  void setSize(String attribute, double size) {
+    setState(() {
+      if (attribute == 'height') {
+        height = 50 + 200 * size;
+      } else {
+        width = 50 + 200 * size;
+      }
+    });
   }
 }
