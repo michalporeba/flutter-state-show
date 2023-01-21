@@ -1,12 +1,15 @@
 # flutter-state-show
 
-A simple application consisting of two sliders, a few buttons and a controlled by them square to show how different state management methods in flutter compare to each other. 
+A simple application consisting of two sliders, a few buttons and a controlled by them square 
+to show how different state management methods in flutter compare to each other. 
 
-The application has the common starting point and layout, all defined in the `main.dart` regardless of the state implementation. To change the state implementation all is required is to change the imports. 
+The application has the common starting point and layout, all defined in the `main.dart` 
+regardless of the state implementation. To change the state implementation all is required 
+is to change the imports. 
 
 All the specific implementations follow the same file layout to make it easy to compare. 
 
-This are the currently implementions
+These are the current implementions:
 
 * [direct statefull](./flutter_state_show/lib/statefull_direct.dart) - widgets modifying each others state directly (an anti example).
 * [scoped state - poco](./flutter_state_show/lib/scoped_poco.dart) - a simple exmaple of scoped state, but with a very simple POCO state object. 
@@ -14,14 +17,16 @@ This are the currently implementions
 * [redux](./flutter_state_show/lib/redux.dart) - state management the redux way. 
 * [BLoC - cubit](./flutter_state_show/lib/cubit.dart) - the simpler of two BLoC options. 
 * [BLoC - proper](./flutter_state_show/lib/bloc.dart) - the more complex and powerful of the BLoC state management approaches. 
-
+* [Riverpod 2.0](./flutter_state_show/lib/riverpod.dart) - the improved provider.
 
 ---
 &nbsp;
 &nbsp;
 # Implementation Details and Comparison
 
-All of the layout code, and most of the setup code is shared between the solutions and kept in the `main.dart` file. The idea here is to keep things that change separately from those that don't, so the differences between the approaches can be easily compared. 
+All of the layout code, and most of the setup code, is shared between the solutions and kept in the `main.dart` file. 
+The idea here is to keep things that change separately from those that don't, 
+so the differences between the approaches can be easily compared. 
 
 ## The Starting Point
 
