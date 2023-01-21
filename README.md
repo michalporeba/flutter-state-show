@@ -620,6 +620,137 @@ class TheSquare extends StatelessWidget {
 }
 ```
 
+---
+&nbsp;
+&nbsp;
+## Riverpod 2.0
+
+### State
+```dart
+class TheState {
+  final double width;
+  final double height;
+  final Color color;
+
+  const TheState({
+    required this.width,
+    required this.height,
+    required this.color
+  });
+
+  const TheState.initial(): width = 0.5, height= 0.5, color = Colors.grey;
+
+  TheState copyWith({
+    double? width,
+    double? height,
+    Color? color,
+  }) => TheState(
+      width: width ?? this.width,
+      height: height ?? this.height,
+      color: color ?? this.color
+  );
+
+  double getSide(String attribute)
+  => (attribute == 'width')
+      ? width
+      : height;
+}
+```
+
+### State management
+```dart
+class StateNotifier extends Notifier<TheState> {
+  @override
+  TheState build() => const TheState.initial();
+
+  void setSide(String attribute, double size)
+  => state =
+      (attribute == 'width')
+          ? state.copyWith(width: size)
+          : state.copyWith(height: size);
+
+  void setColor(Color color) => state = state.copyWith(color: color);
+}
+
+final stateProvider = NotifierProvider<StateNotifier, TheState>(StateNotifier.new);
+```
+
+### Entry point
+```dart
+class SampleStateApp extends ConsumerWidget {
+  final Widget home;
+
+  const SampleStateApp({required this.home, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ProviderScope(
+      child: home
+    );
+  }
+}
+```
+
+### Colour button
+```dart
+class ColorButton extends ConsumerWidget {
+  final Color color;
+  final String label;
+
+  const ColorButton({
+    required this.color,
+    required this.label,
+    Key? key
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return OutlinedButton(
+        onPressed: () => ref.read(stateProvider.notifier).setColor(color),
+        child: Text(label, style: buttonStyle(color))
+    );
+  }
+}
+```
+
+### Slider
+```dart
+class MySlider extends ConsumerWidget {
+  final String attribute;
+  const MySlider({
+    required this.attribute,
+    Key? key
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(stateProvider);
+    return Slider(
+        value: state.getSide(attribute),
+        onChanged: (value) { ref.read(stateProvider.notifier).setSide(attribute, value);}
+    );
+  }
+}
+```
+
+### The square
+```dart
+class TheSquare extends ConsumerWidget {
+  const TheSquare({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(stateProvider);
+    return SizedBox(
+        width: 50 + state.width * 200,
+        height: 50 + state.height * 200,
+        child: DecoratedBox(decoration: BoxDecoration(color: state.color))
+    );
+  }
+}
+```
+
+
 &nbsp;
 &nbsp;
 # Side by side, bit by bit comparison
@@ -657,7 +788,7 @@ class TheState extends Model {
 }
 ```
 
-### Redux, BLoC and Real BLoC
+### Redux, BLoC, Real BLoC and Riverpod 2.0
 
 ```dart
 class TheState {
@@ -786,6 +917,21 @@ class StateBloc extends Bloc<DemoEvent, TheState> {
 }
 ```
 
+### Riverpod 2.0
+```dart
+class StateNotifier extends Notifier<TheState> {
+  @override
+  TheState build() => const TheState.initial();
+
+  void setSide(String attribute, double size)
+  => state =
+      (attribute == 'width')
+          ? state.copyWith(width: size)
+          : state.copyWith(height: size);
+
+  void setColor(Color color) => state = state.copyWith(color: color);
+}
+```
 
 ---
 &nbsp;
@@ -818,7 +964,7 @@ StoreProvider<TheState>(
 ```dart
 BlocProvider(
     create: (_) => StateBloc(),
-    child: home
+    child: Home() 
 );
 ```
 
@@ -827,6 +973,17 @@ BlocProvider(
 BlocProvider(
     create: (_) => StateCubit(),
     child: Home()
+);
+```
+
+### Riverpod 2.0
+```dart
+// global
+final stateProvider = NotifierProvider<StateNotifier, TheState>(StateNotifier.new);
+
+// top of the widget tree
+ProviderScope(
+  child: home
 );
 ```
 
@@ -898,6 +1055,25 @@ return BlocBuilder<StateBloc, TheState>(
 );
 ```
 
+### Riverpod 2.0
+```dart
+class MySlider extends ConsumerWidget {
+  final String attribute;
+  const MySlider({
+    required this.attribute,
+    Key? key
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(stateProvider);
+    return Slider(
+        value: state.getSide(attribute),
+        onChanged: (value) { ref.read(stateProvider.notifier).setSide(attribute, value);}
+    );
+  }
+}
+```
 
 ---
 &nbsp;
@@ -963,4 +1139,21 @@ return BlocBuilder<StateBloc, TheState>(
         );
     }
 );
+```
+
+### Riverpod 2.0
+```dart 
+class TheSquare extends ConsumerWidget {
+  const TheSquare({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(stateProvider);
+    return SizedBox(
+        width: 50 + state.width * 200,
+        height: 50 + state.height * 200,
+        child: DecoratedBox(decoration: BoxDecoration(color: state.color))
+    );
+  }
+}
 ```
