@@ -1,37 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'defaults.dart';
 import 'immutable_state.dart';
 
-class StateCubit extends Cubit<TheState> {
-  StateCubit(): super(const TheState.initial());
+
+final stateProvider = NotifierProvider<StateNotifier, TheState>(StateNotifier.new);
+
+class StateNotifier extends Notifier<TheState> {
+  @override
+  TheState build() => const TheState.initial();
 
   void setSide(String attribute, double size)
-    => emit(
-        (attribute == 'width')
-            ? state.copyWith(width: size)
-            : state.copyWith(height: size)
-    );
+  => state =
+      (attribute == 'width')
+          ? state.copyWith(width: size)
+          : state.copyWith(height: size);
 
-  void setColor(Color color) => emit(state.copyWith(color: color));
+  void setColor(Color color) => state = state.copyWith(color: color);
 }
 
-
-class SampleStateApp extends StatelessWidget {
+class SampleStateApp extends ConsumerWidget {
   final Widget home;
+
   const SampleStateApp({required this.home, Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => StateCubit(),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ProviderScope(
       child: home
     );
   }
 }
 
 
-class ColorButton extends StatelessWidget {
+class ColorButton extends ConsumerWidget {
   final Color color;
   final String label;
 
@@ -42,20 +44,16 @@ class ColorButton extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<StateCubit, TheState>(
-      builder: (context, model) {
-        return OutlinedButton(
-            onPressed: () => context.read<StateCubit>().setColor(color),
-            child: Text(label, style: buttonStyle(color))
-        );
-      }
+  Widget build(BuildContext context, WidgetRef ref) {
+    return OutlinedButton(
+        onPressed: () => ref.read(stateProvider.notifier).setColor(color),
+        child: Text(label, style: buttonStyle(color))
     );
   }
 }
 
 
-class MySlider extends StatelessWidget {
+class MySlider extends ConsumerWidget {
   final String attribute;
   const MySlider({
     required this.attribute,
@@ -63,32 +61,26 @@ class MySlider extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<StateCubit, TheState>(
-      builder: (context, state) {
-        return Slider(
-            value: state.getSide(attribute),
-            onChanged: (value) { context.read<StateCubit>().setSide(attribute, value);}
-        );
-      }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(stateProvider);
+    return Slider(
+        value: state.getSide(attribute),
+        onChanged: (value) { ref.read(stateProvider.notifier).setSide(attribute, value);}
     );
   }
 }
 
 
-class TheSquare extends StatelessWidget {
+class TheSquare extends ConsumerWidget {
   const TheSquare({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<StateCubit, TheState>(
-        builder: (context, model) {
-          return SizedBox(
-              width: 50 + model.width * 200,
-              height: 50 + model.height * 200,
-              child: DecoratedBox(decoration: BoxDecoration(color: model.color))
-          );
-        }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(stateProvider);
+    return SizedBox(
+        width: 50 + state.width * 200,
+        height: 50 + state.height * 200,
+        child: DecoratedBox(decoration: BoxDecoration(color: state.color))
     );
   }
 }
